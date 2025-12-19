@@ -15,10 +15,16 @@ class UserSession extends Model
         'user_id',
         'ip_address',
         'user_agent',
-        'location',
+        'country_code',
+        'country_name',
+        'region_code',
+        'region_name',
+        'city',
+        'time_zone',
         'login_at',
         'logout_at',
     ];
+
 
     protected $casts = [
         'login_at' => 'datetime',
@@ -29,5 +35,16 @@ class UserSession extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+     public function getLieu()
+    {
+        $parts = array_filter([
+            $this->city,
+            $this->region_name,
+            $this->country_name
+        ]);
+
+        return $parts ? implode(', ', $parts) : null;
     }
 }

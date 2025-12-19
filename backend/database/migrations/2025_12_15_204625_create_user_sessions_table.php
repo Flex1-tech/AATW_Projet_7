@@ -23,11 +23,7 @@ return new class extends Migration
             $table->string('region_code', 10)->nullable();
             $table->string('region_name')->nullable();
             $table->string('city')->nullable();
-            $table->string('zip_code')->nullable();
             $table->string('time_zone')->nullable();
-
-            $table->decimal('latitude', 10, 7)->nullable();
-            $table->decimal('longitude', 10, 7)->nullable();
 
             $table->timestamp('login_at')->nullable();
             $table->timestamp('logout_at')->nullable();

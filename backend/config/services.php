@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'wawp' => [
+        'instance_id'  => env('WAWP_INSTANCE_ID'),
+        'access_token' => env('WAWP_ACCESS_TOKEN'),
+    ],
+
 
 ];
