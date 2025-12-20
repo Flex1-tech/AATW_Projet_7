@@ -50,10 +50,11 @@ class User extends Authenticatable  implements MustVerifyEmail
     }
 
         // Relations
-    public function logins()
+    public function user_sessions()
     {
         return $this->hasMany(UserSession::class);
     }
+
     public function otps()
     {
         return $this->hasMany(UserOtp::class);

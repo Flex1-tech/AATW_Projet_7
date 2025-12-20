@@ -20,8 +20,9 @@ return new class extends Migration
 
             $table->string('otp'); // OTP hashé
             $table->enum('channel', ['email', 'whatsapp']);
-            $table->string('context')->nullable();
+            $table->string('context');
 
+            $table->boolean('remember')->default(false);
             $table->boolean('used')->default(false);
 
             $table->timestamp('expires_at');
@@ -30,6 +31,9 @@ return new class extends Migration
 
             // Optimisation des requêtes
             $table->index(['user_id', 'used']);
+            $table->index(['user_id', 'context']);
+            $table->index(['user_id', 'context', 'used']);
+
         });
 
     }

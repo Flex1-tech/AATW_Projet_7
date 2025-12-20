@@ -16,12 +16,14 @@ class UserOtp extends Model
         'otp',
         'channel',
         'used',
+        'remember',
         'expires_at',
         'context',
     ];
 
     protected $casts = [
         'used' => 'boolean',
+        'remember' => 'boolean',
         'expires_at' => 'datetime',
     ];
 
@@ -33,7 +35,7 @@ class UserOtp extends Model
     }
 
 
-        // Helpers
+
 
     public function isExpired(): bool
     {
@@ -52,7 +54,7 @@ class UserOtp extends Model
             && Hash::check($otp, $this->otp);
     }
 
-    
+
         // Scopes
 
     public function scopeValid($query)

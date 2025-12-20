@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use App\Models\User;
 use App\Models\UserOtp;
 use Illuminate\Support\Facades\Hash;
@@ -9,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 
 class OtpService
 {
-    public function send(User $user, string $channel, string $context): void
+    public function send(User $user, string $channel, string $context, bool $remember = false): void
     {
         $this->ensureCooldown($user, $channel, $context);
 
@@ -26,13 +28,14 @@ class OtpService
             'otp'        => Hash::make($otp),
             'channel'    => $channel,
             'context'    => $context,
+            'remember'   => $remember,
             'expires_at' => now()->addMinutes(10),
         ]);
 
         $this->dispatch($user, $otp, $channel);
     }
 
-    public function verify(User $user, string $otp, string $channel, string $context): bool
+    public function verify(User $user, string $otp, string $channel, string $context): ?UserOtp
     {
         $record = UserOtp::where('user_id', $user->id)
             ->where('channel', $channel)
@@ -43,11 +46,11 @@ class OtpService
 
 
         if (!$record || !Hash::check($otp, $record->otp)) {
-            return false;
+            return null;
         }
 
         $record->markAsUsed();
-        return true;
+        return $record;
     }
 
     protected function ensureCooldown(User $user, string $channel, string $context)
@@ -59,7 +62,7 @@ class OtpService
             ->first();
 
 
-        if ($lastOtp && $lastOtp->created_at->diffInSeconds(now()) < 300) {
+        if ($lastOtp && $lastOtp->created_at->diffInSeconds(now()) < 60) {
             abort(429, 'Attendez avant de demander un nouveau code');
         }
     }
@@ -75,47 +78,41 @@ class OtpService
         }
     }
 
-    protected function sendWhatsapp(string $phone, string $otp): bool
-    {
-        // Formatage du numéro  
-        $phone = preg_replace('/\D/', '', $phone); 
-        if (substr($phone, 0, 2) === '01') {
-            $phone = '229' . substr($phone, 2); 
-        }
+protected function sendWhatsapp(string $phone, string $otp): bool
+{
+    $phone = preg_replace('/\D/', '', $phone);
+    if (substr($phone, 0, 2) === '01') {
+        $phone = '229' . substr($phone, 2);
+    }
 
-        $url = "https://wawp.net/wp-json/awp/v1/send";
+    $message = "Votre code OTP est : {$otp}\nValable 10 minutes.";
+    $client = new Client();
 
-        $instanceId  = config('services.wawp.instance_id');
-        $accessToken = config('services.wawp.access_token');
-
-        $message = "Votre code OTP est : {$otp}\nValable 10 minutes.";
-
-        $data = [
-            "number"        => $phone,
-            "type"          => "text",
-            "message"       => $message,
-            "instance_id"   => $instanceId,
-            "access_token"  => $accessToken
-        ];
-
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-            CURLOPT_POSTFIELDS     => json_encode($data),
-            CURLOPT_TIMEOUT        => 10
+    try {
+        $response = $client->post('https://wawp.net/wp-json/awp/v1/send', [
+            'form_params' => [
+                'instance_id'  => config('services.wawp.instance_id'),
+                'access_token' => config('services.wawp.access_token'),
+                'chatId'       => $phone,
+                'message'      => $message,
+            ],
+            'timeout' => 10
         ]);
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $body = (string) $response->getBody();
+        $data = json_decode($body, true);
 
-        if ($response === false || $httpCode !== 200) {
-            error_log('Erreur WhatsApp OTP : ' . $response);
+        // Vérifier le statut si le JSON n'est pas vide
+        if ($data && ($data['status'] ?? '') !== 'success') {
+            error_log('Erreur WhatsApp OTP : ' . $body);
             return false;
         }
 
         return true;
+
+    } catch (RequestException $e) {
+        error_log('Erreur WhatsApp OTP : ' . $e->getMessage());
+        return false;
     }
+}
 }
