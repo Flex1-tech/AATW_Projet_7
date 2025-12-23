@@ -1,7 +1,12 @@
 import { Routes, Route, Link, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import PageOTP from "./pages/PageOTP";
+import DashboardPage from "./pages/DashboardPage";
+import ForgotPasswordPageModif from "./pages/ForgotPasswordPageModif";
+import Successmessage from "./components/Successmessage";
+import Successpage from "./pages/Successpage";
 export default function App() {
   return (
     <>
@@ -10,6 +15,11 @@ export default function App() {
         <Route path="/" element= {<Navigate to = "/loginPage"/>}/>
         <Route path="/loginPage" element={<LoginPage/>} />
         <Route path="/signupPage" element={<SignupPage/>} />
+        <Route path="/forgotPasswordPage" element= {<ForgotPasswordPage/>} />
+        <Route path="/pageOTP" element = {<PageOTP/>} />
+        <Route path="/dashboardPage" element = {<DashboardPage/>} />
+        <Route path="/forgotPasswordPageModif" element = {<ForgotPasswordPageModif/>} />
+        <Route path = "/successPage" element = {<Successpage/>}/>
       </Routes>
     </>
   );

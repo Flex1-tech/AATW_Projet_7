@@ -1,12 +1,11 @@
-// FormInput.jsx
-import React from "react";
+import React from 'react'
 
-function EmailInput({ label,  value, onChange, placeholder, id}) {
+function OTPinput({ label,  value, onChange, placeholder, id}) {
   return (
-    <div className="flex flex-col">
+   <div className="flex flex-col gap-2">
       {label && <label htmlFor={id}>{label}</label>}
       <input
-        type="email"
+        type="text"
         id={id}
         value={value}
         onChange={onChange}
@@ -15,7 +14,7 @@ function EmailInput({ label,  value, onChange, placeholder, id}) {
         required
       />
     </div>
-  );
+  )
 }
 
-export default EmailInput;
+export default OTPinput
