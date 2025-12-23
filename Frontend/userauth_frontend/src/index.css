@@ -6,3 +6,7 @@
   @apply w-full h-12 pl-4 rounded-lg border border-gray-300 outline-ButtonAppBorderColorA;
 }
  
+body
+{
+  font-family: 'Inter';
+}

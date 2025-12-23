@@ -21,6 +21,9 @@ import ButtonType1Blue from "../components/ButtonType1Blue"; // Bouton principal
 import EmailInput from "../components/EmailInput"; 
 import PasswordInput from "../components/PasswordInput";
 import PhoneNumberInput from "../components/PhoneInput";
+import PageTitle from "../components/PageTitle";
+import Logo from "../assets/logo.svg";
+import HeadingLogo from "../components/HeadingLogo";
 
 function SignupPage() {
   // État local regroupant toutes les valeurs du formulaire
@@ -54,25 +57,20 @@ function SignupPage() {
   return (
     <>
       {/* Formulaire principal */}
-      <form className="flex" onSubmit={handleSubmit}>
+      <div className="flex" >
         {/* Partie gauche : image et texte */}
         <LeftSideAuth />
 
         {/* Partie droite : formulaire utilisateur */}
-        <div className="w-[100%] customBreakpoint:w-[50%] lg:w-[50%] xl:w-[50%] flex flex-col items-center gap-10 pt-10">
-          {/* Titre du formulaire */}
-          <div>
-            <h1 className="font-bold text-center text-TextColorBlack text-HeadingFont">
-              Connectez-vous a UserAuth
-            </h1>
-          </div>
+        <form onSubmit={handleSubmit} className="w-[100%] customBreakpoint:w-[50%] lg:w-[50%] xl:w-[50%] flex flex-col items-center gap-10 pt-10">
+          <HeadingLogo logo={Logo}/>
+         <PageTitle text = "Inscrivez  vous a UserAuth"/>
 
           {/* Champs du formulaire */}
           <div className="flex flex-col w-[100%] p-4 gap-6">
             {/* Champ email */}
             <EmailInput
               label="Email"
-              type="email"
               id="email_input"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -90,7 +88,6 @@ function SignupPage() {
             {/* Champ mot de passe */}
             <PasswordInput
               label="Mot de passe"
-              type="password"
               id="password_input"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -98,25 +95,17 @@ function SignupPage() {
             />
 
             {/* Message d'information OTP */}
-            <div>
-              <p className="text-center text-TextColorBlue">
-                L’inscription nécessite l’envoi d’un code OTP, envoyé sur votre WhatsApp ou votre email selon la méthode choisie.
+            <div className="flex justify-center">
+              <p className="text-center w-[90%] text-TextColorBlue">
+               L’inscription est effective apres avoir recu un email de verification obligatoire . Apres l’avoir visite , vous irez vers la page de connexion pour pouvoir acceder a la plateforme .
               </p>
             </div>
           </div>
 
           {/* Boutons d'action */}
-          <div className="flex flex-col items-center w-[100%] -mt-4 p-4 gap-2">
-            {/* Bouton principal bleu */}
+          <div className="flex flex-col items-center w-[100%] -mt-10 p-4 gap-6">
+            {/* Bouton principal bleu pour connexion email */}
             <ButtonType1Blue text="Inscrivez-vous" /> 
-
-            <div>
-              <span>ou</span>
-            </div>
-
-            {/* Bouton secondaire transparent avec WhatsApp */}
-            <ButtonType2Transparent />
-
             {/* Lien vers la page de login */}
             <div>
               <p className="text-center">
@@ -127,8 +116,8 @@ function SignupPage() {
               </p>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </>
   );
 }
