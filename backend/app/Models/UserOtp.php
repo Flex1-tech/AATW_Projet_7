@@ -34,9 +34,7 @@ class UserOtp extends Model
         return $this->belongsTo(User::class);
     }
 
-
-
-
+    // Methods
     public function isExpired(): bool
     {
         return Carbon::now()->greaterThan($this->expires_at);

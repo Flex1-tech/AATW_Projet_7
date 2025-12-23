@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OtpController;
 use App\Http\Controllers\Api\PasswordController;
-
-
+use App\Http\Controllers\Api\PasswordController as ApiPasswordController;
 
     // Routes d'AUTHENTIFICATION
     Route::prefix('auth')->group(function () {
@@ -30,6 +29,10 @@ use App\Http\Controllers\Api\PasswordController;
         // OTP
         Route::prefix('otp')->group(function () {
             Route::post('/resend', [OtpController::class, 'resend'])->name('auth.otp.resend');
+
+            Route::post('/verify-reset', [OtpController::class, 'verifyReset'])
+            ->name('auth.otp.verify-reset');
+    });
         });
 
         // Password (Réinitialisation)
@@ -37,7 +40,6 @@ use App\Http\Controllers\Api\PasswordController;
             Route::post('/forgot', [PasswordController::class, 'requestReset'])->name('auth.password.forgot');
             Route::post('/reset', [PasswordController::class, 'reset'])->name('auth.password.reset');
         });
-    });
 
     // Routes protégées (auth:sanctum)
     Route::middleware('auth:sanctum')->prefix('auth')->group(function () {

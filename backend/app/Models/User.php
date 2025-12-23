@@ -59,6 +59,11 @@ class User extends Authenticatable  implements MustVerifyEmail
     {
         return $this->hasMany(UserOtp::class);
     }
+    
+    public function password_reset_tokens()
+    {
+        return $this->hasMany(PasswordResetToken::class);
+    }
 
 }
 

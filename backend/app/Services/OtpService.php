@@ -58,14 +58,15 @@ class OtpService
         $lastOtp = UserOtp::where('user_id', $user->id)
             ->where('channel', $channel)
             ->where('context', $context)
+            ->valid()
             ->latest()
             ->first();
-
 
         if ($lastOtp && $lastOtp->created_at->diffInSeconds(now()) < 60) {
             abort(429, 'Attendez avant de demander un nouveau code');
         }
     }
+
 
     protected function dispatch(User $user, int $otp, string $channel): void
     {

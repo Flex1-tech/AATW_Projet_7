@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Controllers\Api;
-use App\Http\Controllers\Controller;
+
 use App\Models\User;
 use App\Models\UserOtp;
 use App\Services\OtpService;
 use Illuminate\Http\Request;
+use App\Models\PasswordResetToken;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -24,45 +27,45 @@ class PasswordController extends Controller
         $otpService->send($user, $request->channel, 'reset_password');
 
         return response()->json([
-            'message' => 'OTP envoyé pour réinitialisation',
-            'user_id' => $user->id
+            'message' => 'OTP envoyé pour réinitialisation'
         ]);
     }
+
 
     public function reset(Request $request)
     {
         $request->validate([
-            'user_id'              => 'required|exists:users,id',
-            'password'             => 'required|min:8|confirmed',
+            'reset_token' => 'required|string',
+            'password'    => 'required|min:8|confirmed',
         ]);
 
+        $hashedToken = hash('sha256', $request->reset_token);
 
-
-        $validation = UserOtp::where('user_id', $request->user_id)
-            ->where('context', 'reset_password')
-            ->valid() 
+        $reset = PasswordResetToken::where('token', $hashedToken)
+            ->valid()
             ->first();
 
-
-        if (! $validation) {
+        if (! $reset) {
             return response()->json([
-                'message' => 'OTP non validé ou expiré'
+                'message' => 'Token invalide ou expiré'
             ], 403);
         }
 
-        $user = User::findOrFail($request->user_id);
+        $user = User::findOrFail($reset->user_id);
+
         $user->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         // nettoyage
-        $validation->delete();
-        UserOtp::where('user_id', $user->id)->delete();
+        $reset->delete();
+        UserOtp::where('user_id', $user->id)
+            ->where('context', 'reset_password')
+            ->delete();
 
         return response()->json([
             'message' => 'Mot de passe réinitialisé avec succès'
         ]);
     }
-
 
 }

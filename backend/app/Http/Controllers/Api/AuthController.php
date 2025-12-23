@@ -38,8 +38,7 @@ class AuthController extends Controller
         event(new Registered($user));
 
         return response()->json([
-            'message' => 'Compte créé. Vérifiez votre e-mail.',
-            'user_id' => $user->id,
+            'message' => 'Compte créé. Vérifiez votre e-mail.'
         ], 201);
     }
 
@@ -75,8 +74,7 @@ class AuthController extends Controller
         $otpService->send($user, $request->channel, 'login', $remember);
 
         return response()->json([
-            'message' => 'OTP envoyé',
-            'user_id' => $user->id,
+            'message' => 'OTP envoyé'
         ]);
     }
 
@@ -85,13 +83,13 @@ class AuthController extends Controller
     public function verifyOtp(Request $request, OtpService $otpService)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'email'   => 'required|email|exists:users,email',
             'otp'     => 'required|digits:6',
             'channel' => 'required|in:email,whatsapp',
             'context' => 'required|in:login,reset_password',
         ]);
 
-        $user = User::findOrFail($request->user_id);
+        $user = User::where('email', $request->email)->firstOrFail();
 
         $otpRecord = $otpService->verify(
             $user,
@@ -132,12 +130,16 @@ class AuthController extends Controller
             'login_at'     => now(),
         ]);
 
-
         return response()->json([
             'message' => 'Connexion réussie',
             'token'   => $token,
             'expires_at' => $expiration,
-            'user'    => $user,
+            'user'    => [
+                'nom' => $user->nom,
+                'prenom' => $user->prenom,
+                'email' => $user->email,
+                'telephone' => $user->telephone,
+            ],
             'session_id' => $session->id,
         ]);
     }
@@ -202,9 +204,38 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         $user = $request->user();
-        $user->load('user_sessions');
-        return response()->json($user);
+
+        // Charger les sessions
+        $user->load(['user_sessions' => function($query) {
+            // les plus récentes en premier
+            $query->orderBy('login_at', 'desc');
+        }]);
+
+
+        $sessions = $user->user_sessions->map(function($session) {
+            return [
+                'id' => $session->id,
+                'ip_address' => $session->ip_address,
+                'user_agent' => $session->user_agent,
+                'location' => [
+                    'city'    => $session->city,
+                    'region'  => $session->region_name,
+                    'country' => $session->country_name,
+                ],
+                'login_at'  => $session->login_at,
+                'logout_at' => $session->logout_at,
+            ];
+        });
+
+        return response()->json([
+            'nom'       => $user->nom,
+            'prenom'    => $user->prenom,
+            'email'     => $user->email,
+            'telephone' => $user->telephone,
+            'sessions'  => $sessions,
+        ]);
     }
+
 
     protected function getGeoInfo($ip)
     {
