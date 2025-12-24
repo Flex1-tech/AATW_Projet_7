@@ -10,18 +10,14 @@ import React, { useState } from "react";
 // Importation du composant PhoneInput pour la saisie de numéro de téléphone
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css"; // Styles par défaut de PhoneInput
-import { useNavigate, Link } from "react-router-dom"; // Pour naviguer entre les pages
-//import backgroundImage from "../assets/undraw_authentication_1evl.svg"; // Image côté gauche
+import { Link } from "react-router-dom"; // Pour naviguer entre les pages
+import backgroundImage from "../assets/undraw_authentication_1evl.svg"; // Image côté gauche
 import { FaWhatsapp } from "react-icons/fa"; // Icône WhatsApp
-
-// Importation de api.js qui va servir pour les requêtes avec axios
-import api from "../services/api";
 
 // Composants réutilisables depuis le dossier components
 import LeftSideAuth from "../components/LeftSideAuth"; // Partie gauche avec texte et image
 import ButtonType2Transparent from "../components/ButtonType2Transparent"; // Bouton secondaire
 import ButtonType1Blue from "../components/ButtonType1Blue"; // Bouton principal
-import TextInput from "../components/TextInput";
 import EmailInput from "../components/EmailInput"; 
 import PasswordInput from "../components/PasswordInput";
 import PhoneNumberInput from "../components/PhoneInput";
@@ -30,16 +26,12 @@ import Logo from "../assets/logo.svg";
 import HeadingLogo from "../components/HeadingLogo";
 
 function SignupPage() {
-  const navigate = useNavigate(); // Hook pour la navigation
   // État local regroupant toutes les valeurs du formulaire
-  const initialFormData = {
-    name: "",
-    lastName: "",
+  const [formData, setFormData] = useState({
     email: "",
     phone: "",
     password: "",
-  };
-  const [formData, setFormData] = useState(initialFormData);
+  });
 
   // État pour stocker un message d'erreur si le numéro est invalide
   const [error, setError] = useState("");
@@ -50,37 +42,13 @@ function SignupPage() {
    * - Vérifie si le numéro est valide et commence par +229 (Bénin)
    * - Affiche un message d'erreur si nécessaire
    */
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault(); // Empêche le comportement par défaut du formulaire
 
     if (isValidPhoneNumber(formData.phone) && formData.phone.startsWith("+229")) {
       setError(""); // Supprime l'erreur si tout est correct
       console.log("Valid Benin number:", formData); // Affiche les données dans la console (pour test)
-      // Envoi des données au backend
-      try {
-        const response = await api.post('/auth/register',{
-          nom: formData.name,
-          prenom: formData.lastName,
-          email: formData.email,
-          telephone: formData.phone,
-          password: formData.password,
-          password_confirmation: formData.password
-        });
-        console.log('✅ Inscription réussie:', response.data);
-        // Nettoyage du formulaire
-        setFormData(initialFormData);
-        //Redirection vers la page de connexion
-        navigate('/loginPage');
-      }
-     catch (error) {
-      
-      if (error.response?.status === 422) {
-        const errors = error.response.data.errors;
-        console.log('Erreurs de validation:', errors);
-      }
-      setError(error.response?.data?.message || 'Erreur d\'inscription');
-    }
-    
+      // TODO : envoyer les données au backend
     } else {
       setError("Numéro invalide. Entrez un numéro béninois valide."); // Affiche le message d'erreur
     }
@@ -100,25 +68,6 @@ function SignupPage() {
 
           {/* Champs du formulaire */}
           <div className="flex flex-col w-[100%] p-4 gap-6">
-
-            {/* Champ nom */}
-            <TextInput
-              label="Nom"
-              id="name_input"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Entrer votre nom"
-            />
-
-            {/* Champ prenom */}
-            <TextInput
-              label="Prenom"
-              id="lastName_input"
-              value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-              placeholder="Entrer votre nom prénom"
-            />
-
             {/* Champ email */}
             <EmailInput
               label="Email"
@@ -145,14 +94,6 @@ function SignupPage() {
               placeholder="Entrer votre mot de passe"
             />
 
-            <PasswordInput
-              label="Confirmation du mot de passe"
-              id="passwordConfirmation_input"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              placeholder="Confirmez votre mot de passe"
-            />
-
             {/* Message d'information OTP */}
             <div className="flex justify-center">
               <p className="text-center w-[90%] text-TextColorBlue">
@@ -165,7 +106,6 @@ function SignupPage() {
           <div className="flex flex-col items-center w-[100%] -mt-10 p-4 gap-6">
             {/* Bouton principal bleu pour connexion email */}
             <ButtonType1Blue text="Inscrivez-vous" /> 
-
             {/* Lien vers la page de login */}
             <div>
               <p className="text-center">

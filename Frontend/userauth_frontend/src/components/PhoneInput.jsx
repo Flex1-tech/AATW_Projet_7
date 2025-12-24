@@ -8,7 +8,7 @@ function PhoneNumberInput({ label, value, onChange, error, defaultCountry = "BJ"
     <div className="flex flex-col">
       {label && <label>{label}</label>}
       <PhoneInput
-        placeholder="Entrez votre numéro (ex: +2290161234567)"
+        placeholder="Entrez votre numéro (ex: 0161234567)"
         value={value}
         onChange={onChange}
         defaultCountry={defaultCountry}
