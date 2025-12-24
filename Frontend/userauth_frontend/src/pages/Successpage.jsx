@@ -7,29 +7,29 @@ import { Link } from 'react-router-dom';
 import ButtonType1Blue from '../components/ButtonType1Blue';
 
 function Successpage() {
+    // Utilisation d'une icône de validation
     let SuccessIcon = <CloudCheck size={40} className='text-ButtonAppBackgroundColor'/>;
-  return (
-        <div className='flex'>
-       
-       <LeftSideAuth/>
-         <form  className="w-[100%] customBreakpoint:w-[50%] lg:w-[50%] xl:w-[50%] flex flex-col items-center gap-10 pt-10">
-         
-          <HeadingIcon icon = {SuccessIcon} />
-          {/*Titre de le page*/ }               
-          <Successmessage text = "Votre mot de passe a ete modifie avec success"/>
 
+  return (
+    <div className='flex'>
+       <LeftSideAuth/>
+       {/* On retire la balise <form> car ici il n'y a rien à soumettre, une <div> suffit */}
+       <div className="w-[100%] customBreakpoint:w-[50%] lg:w-[50%] xl:w-[50%] flex flex-col items-center gap-10 pt-10">
+         
+          <HeadingIcon icon={SuccessIcon} />
+          
+          {/* Nouveau texte adapté à l'inscription */}
+          <Successmessage text="Inscription réussie ! Veuillez vérifier votre boîte mail pour valider votre compte avant de vous connecter."/>
           
           {/* Boutons d'action */}
           <div className="flex flex-col items-center w-[100%] -mt-10 p-4 gap-6">
-            {/* Bouton principal bleu */}
-            
              <Link to="/loginPage" className="w-full">
-                <ButtonType1Blue text="Connectez-vous a present" /> 
+                <ButtonType1Blue text="Aller à la page de connexion" /> 
             </Link> 
           </div>
-        </form>
+       </div>
     </div>
   )
 }
 
-export default Successpage
+export default Successpage;

@@ -10,7 +10,7 @@ import React, { useState } from "react";
 // Importation du composant PhoneInput pour la saisie de numéro de téléphone
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css"; // Styles par défaut de PhoneInput
-import { Link } from "react-router-dom"; // Pour naviguer entre les pages
+import { Link, useNavigate } from "react-router-dom";
 import backgroundImage from "../assets/undraw_authentication_1evl.svg"; // Image côté gauche
 import { FaWhatsapp } from "react-icons/fa"; // Icône WhatsApp
 
@@ -27,6 +27,7 @@ import HeadingLogo from "../components/HeadingLogo";
 
 function SignupPage() {
   // État local regroupant toutes les valeurs du formulaire
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
@@ -48,6 +49,7 @@ function SignupPage() {
     if (isValidPhoneNumber(formData.phone) && formData.phone.startsWith("+229")) {
       setError(""); // Supprime l'erreur si tout est correct
       console.log("Valid Benin number:", formData); // Affiche les données dans la console (pour test)
+      navigate("/Successpage");
       // TODO : envoyer les données au backend
     } else {
       setError("Numéro invalide. Entrez un numéro béninois valide."); // Affiche le message d'erreur
