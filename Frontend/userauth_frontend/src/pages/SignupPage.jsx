@@ -65,7 +65,7 @@ function SignupPage() {
 
         {/* Partie droite : formulaire utilisateur */}
         <form onSubmit={handleSubmit} className="w-[100%] customBreakpoint:w-[50%] lg:w-[50%] xl:w-[50%] flex flex-col items-center gap-10 pt-10">
-          <HeadingLogo logo={Logo}/>
+          <HeadingLogo  size = "w-16 h-16" logo={Logo}/>
          <PageTitle text = "Inscrivez  vous a UserAuth"/>
 
           {/* Champs du formulaire */}

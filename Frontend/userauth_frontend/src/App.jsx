@@ -7,6 +7,8 @@ import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPageModif from "./pages/ForgotPasswordPageModif";
 import Successmessage from "./components/Successmessage";
 import Successpage from "./pages/Successpage";
+import Successpageotp from "./pages/successPageOTP";
+import ProtectedRoute from "./components/ProtectedRoute";
 export default function App() {
   return (
     <>
@@ -17,9 +19,24 @@ export default function App() {
         <Route path="/signupPage" element={<SignupPage/>} />
         <Route path="/forgotPasswordPage" element= {<ForgotPasswordPage/>} />
         <Route path="/pageOTP" element = {<PageOTP/>} />
-        <Route path="/dashboardPage" element = {<DashboardPage/>} />
+        <Route 
+  path="/dashboardPage" 
+  element={
+    <ProtectedRoute>
+      <DashboardPage />
+    </ProtectedRoute>
+  } 
+/>
         <Route path="/forgotPasswordPageModif" element = {<ForgotPasswordPageModif/>} />
         <Route path = "/successPage" element = {<Successpage/>}/>
+       <Route 
+  path="/successPageOTP" 
+  element={
+    <ProtectedRoute>
+      <Successpageotp />
+    </ProtectedRoute>
+  } 
+/>
       </Routes>
     </>
   );

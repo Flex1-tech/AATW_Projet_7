@@ -1,8 +1,8 @@
 import React from 'react'
 
-function HeadingLogo({logo}) {
+function HeadingLogo({logo,size}) {
   return (
-    <img src={logo} alt="Company_LOGO"className='w-16 h-16' />
+    <img src={logo} alt="Company_LOGO" className={size} />
   )
 }
 

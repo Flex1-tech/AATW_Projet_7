@@ -1,89 +1,180 @@
-import React, { useState } from 'react'
-import HeadingIcon from '../components/HeadingIcon';
-import { SquareAsterisk } from 'lucide-react';
-import PageTitle from '../components/PageTitle';
-import ButtonType1Blue from '../components/ButtonType1Blue'; 
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // Ajout de useNavigate
-import LeftSideAuth from '../components/LeftSideAuth';
-import OTPinput from '../components/OTPinput';
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+// Components
+import LeftSideAuth from "../components/LeftSideAuth";
+import HeadingIcon from "../components/HeadingIcon";
+import PageTitle from "../components/PageTitle";
+import OTPinput from "../components/OTPinput";
+import ButtonType1Blue from "../components/ButtonType1Blue";
+import { SquareAsterisk } from "lucide-react";
 
 function PageOTP() {
-  const navigate = useNavigate();
+  // Get state passed from LoginPage
   const location = useLocation();
-  
-  // On récupère l'adresse de destination envoyée par la page précédente
-  const nextPage = location.state || "/dashboardPage"; 
+  const { identity, channel, email_default } = location.state || {};
+  const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    otp: "",
-  });
-  const [error, setError] = useState("");
+  // -------------------------
+  // State
+  // -------------------------
+  const [formData, setFormData] = useState({ otp: "" }); // Store OTP input
+  const [loading, setLoading] = useState(false); // Track loading state for buttons
+  const [error, setError] = useState(""); // Store error messages
 
-  const OTP_Icon = <SquareAsterisk size={40} className='text-ButtonAppBackgroundColor' />;
+  // Icon used for header
+  const OTP_Icon = <SquareAsterisk size={40} className="text-ButtonAppBackgroundColor" />;
 
-  // Fonction de soumission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // -------------------------
+  // Function: Resend OTP
+  // -------------------------
+  const resendOtp = async () => {
+    setLoading(true); // Start loading
+    try {
+      // Call backend endpoint to resend OTP
+      const response = await fetch("http://127.0.0.1:8000/api/auth/resend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email_default, // User email
+          channel: channel,     // "email" or "whatsapp"
+          context: "login",     // Context of OTP (login)
+        }),
+      });
 
-    // 1. On vérifie si le champ est vide
-    if (!formData.otp.trim()) {
-      setError("Veuillez entrer le code OTP avant de continuer.");
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Backend returned an error
+        setError(data.message || "Impossible de renvoyer le code OTP.");
+        return;
+      }
+
+      // Success: clear errors and notify user
+      setError("");
+      alert("Le code OTP a été renvoyé avec succès !");
+    } catch (err) {
+      console.error("Erreur réseau:", err);
+      setError("Impossible de renvoyer le code OTP pour le moment.");
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
+  // -------------------------
+  // Function: Verify OTP
+  // -------------------------
+  const verifyOtp = async () => {
+    setLoading(true); // Start loading
+    const otp = formData.otp.trim(); // Remove whitespace
+    setFormData({ otp: "" }); // Clear input after reading
+
+    // Validation: OTP must be exactly 6 digits
+    if (!/^\d{6}$/.test(otp)) {
+      setError("Le code OTP doit contenir exactement 6 chiffres.");
+      setLoading(false);
       return;
     }
 
-    // 2. Si c'est bon, on redirige vers la page de modification (nextPage)
-    console.log("OTP saisi :", formData.otp);
-    setError("");
-    navigate(nextPage);
+    try {
+      // Call backend endpoint to verify OTP
+      const response = await fetch("http://127.0.0.1:8000/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email_default,
+          otp,
+          channel,
+          context: "login",
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        setError(err.message || "Erreur lors de la vérification de l'OTP");
+        return;
+      }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token); // Store token locally
+
+      setError(""); // Clear any errors
+      // Redirect to success page with token
+      navigate("/successPageOTP", { state: { token: data.token } });
+    } catch (err) {
+      console.error("Erreur réseau:", err);
+      setError("Impossible de vérifier l'OTP pour le moment");
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
 
+  // -------------------------
+  // JSX: Render
+  // -------------------------
   return (
-    <>
-      <div className='flex'>
-        <LeftSideAuth/>
-        
-        {/* Ajout du onSubmit pour déclencher la vérification */}
-        <form onSubmit={handleSubmit} className="w-[100%] customBreakpoint:w-[50%] lg:w-[50%] xl:w-[50%] flex flex-col items-center gap-10 pt-10">
-          
-          <HeadingIcon icon={OTP_Icon} />
-          <PageTitle text="Rentrez votre code OTP"/>
+    <div className="flex">
+      {/* Left side authentication illustration */}
+      <LeftSideAuth />
 
-          <div className="flex flex-col w-[100%] p-4 gap-6">
-            <OTPinput
-              label="Code OTP"
-              id="otp_input"
-              value={formData.otp}
-              onChange={(e) => {
-                setFormData({ ...formData, otp: e.target.value });
-                if(error) setError(""); // Efface l'erreur quand on tape
-              }}
-              placeholder="Entrer votre code"
-            />
-            
-            {/* Affichage du message d'erreur */}
-            {error && <p className="text-red-500 text-sm text-center -mt-4">{error}</p>}
-          </div>
+      {/* OTP Form */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          verifyOtp(); // Verify OTP on form submit
+        }}
+        className="w-[100%] customBreakpoint:w-[50%] lg:w-[50%] xl:w-[50%] flex flex-col items-center gap-10 pt-10"
+      >
+        {/* Header: Icon and Page Title */}
+        <HeadingIcon icon={OTP_Icon} />
+        <PageTitle text="Rentrez votre code OTP" />
 
-          <div className="flex flex-col items-center w-[100%] -mt-4 p-4 gap-6">
-            {/* Le bouton bleu doit être de type submit pour lancer handleSubmit */}
-            <div className='w-full'>
-               <ButtonType1Blue text="Continuer"/>
-            </div>
-            
-            <div className='flex justify-center'>
-              <p className="text-center w-[82%] text-sm">
-                Chaque code a une durée maximale d'utilisation de 10 min.{" "}
-                <br />
-                <button type="button" className="text-TextColorBlue hover:underline font-bold">
-                  Renvoyez le code OTP
-                </button>
-              </p>
-            </div>
+        {/* OTP Input Field */}
+        <div className="flex flex-col w-[100%] p-4 gap-6">
+          <OTPinput
+            label="Code OTP"
+            id="otp_input"
+            value={formData.otp}
+            onChange={(e) => {
+              setFormData({ ...formData, otp: e.target.value });
+              if (error) setError(""); // Clear error while typing
+            }}
+            placeholder="Entrer votre code"
+          />
+
+          {/* Error message */}
+          {error && (
+            <p className="text-red-500 text-sm text-center -mt-4">{error}</p>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col items-center w-[100%] -mt-4 p-4 gap-6">
+          {/* Verify OTP button */}
+          <ButtonType1Blue
+            text={loading ? "Verification du code..." : "Continuer"}
+            disabled={loading}
+            onClick={verifyOtp}
+          />
+
+          {/* Resend OTP link */}
+          <div className="flex justify-center">
+            <p className="text-center w-[82%] text-sm">
+              Chaque code a une durée maximale d'utilisation de 10 min.
+              <br />
+              <button
+                type="button"
+                className="text-TextColorBlue hover:underline font-bold"
+                onClick={resendOtp} // Trigger resend OTP
+              >
+                Renvoyez le code OTP
+              </button>
+            </p>
           </div>
-        </form>
-      </div>
-    </>
-  )
+        </div>
+      </form>
+    </div>
+  );
 }
 
 export default PageOTP;
