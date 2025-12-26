@@ -57,7 +57,7 @@ function SignupPage() {
       console.log("Valid Benin number:", formData); // Affiche les données dans la console (pour test)
       // Envoi des données au backend
       try {
-        const response = await api.post('/auth/register',{
+        const response = await api.post('http://127.0.0.1:8000/api/auth/register',{
           nom: formData.name,
           prenom: formData.lastName,
           email: formData.email,
