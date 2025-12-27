@@ -8,6 +8,7 @@ import PageTitle from "../components/PageTitle";
 import OTPinput from "../components/OTPinput";
 import ButtonType1Blue from "../components/ButtonType1Blue";
 import { SquareAsterisk } from "lucide-react";
+import LoaderButton from "../components/LoaderButton";
 
 function PageOTP() {
   // Get state passed from LoginPage
@@ -151,10 +152,16 @@ function PageOTP() {
         {/* Action Buttons */}
         <div className="flex flex-col items-center w-[100%] -mt-4 p-4 gap-6">
           {/* Verify OTP button */}
-          <ButtonType1Blue
-            text={loading ? "Verification du code..." : "Continuer"}
+           <ButtonType1Blue
+            text=  {loading ? (
+    <div className="flex items-center justify-center gap-2">
+      <LoaderButton /> {/* Your loader component */}
+      <span>Verification du code...</span>
+    </div>
+  ) : (
+    "Continuer"
+  )}
             disabled={loading}
-            onClick={verifyOtp}
           />
 
           {/* Resend OTP link */}

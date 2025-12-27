@@ -27,8 +27,9 @@ import PhoneNumberInput from "../components/PhoneInput";
 import PageTitle from "../components/PageTitle";
 import Logo from "../assets/logo.svg";
 import HeadingLogo from "../components/HeadingLogo";
-
+import LoaderButton from "../components/LoaderButton";
 function SignupPage() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Hook pour la navigation
   // État local regroupant toutes les valeurs du formulaire
   const initialFormData = {
@@ -49,41 +50,42 @@ function SignupPage() {
    * - Vérifie si le numéro est valide et commence par +229 (Bénin)
    * - Affiche un message d'erreur si nécessaire
    */
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Empêche le comportement par défaut du formulaire
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (isValidPhoneNumber(formData.phone) && formData.phone.startsWith("+229")) {
-      setError(""); // Supprime l'erreur si tout est correct
-      console.log("Valid Benin number:", formData); // Affiche les données dans la console (pour test)
-      // Envoi des données au backend
-      try {
-        const response = await api.post('http://127.0.0.1:8000/api/auth/register',{
-          nom: formData.name,
-          prenom: formData.lastName,
-          email: formData.email,
-          telephone: formData.phone,
-          password: formData.password,
-          password_confirmation: formData.password
-        });
-        console.log('✅ Inscription réussie:', response.data);
-        // Nettoyage du formulaire
-        setFormData(initialFormData);
-        //Redirection vers la page de connexion
-        navigate('/Successpage');
-      }
-     catch (error) {
-      
+  if (loading) return; // Prevent multiple clicks
+
+  if (isValidPhoneNumber(formData.phone) && formData.phone.startsWith("+229")) {
+    setError("");
+    setLoading(true); // Start loading
+    console.log("Valid Benin number:", formData);
+
+    try {
+      const response = await api.post('http://127.0.0.1:8000/api/auth/register',{
+        nom: formData.name,
+        prenom: formData.lastName,
+        email: formData.email,
+        telephone: formData.phone.slice(0, 4) + formData.phone.slice(6),
+        password: formData.password,
+        password_confirmation: formData.password
+      });
+      console.log('✅ Inscription réussie:', response.data);
+      setFormData(initialFormData);
+      navigate('/Successpage');
+    } catch (error) {
       if (error.response?.status === 422) {
         const errors = error.response.data.errors;
         console.log('Erreurs de validation:', errors);
       }
       setError(error.response?.data?.message || 'Erreur d\'inscription');
+    } finally {
+      setLoading(false); // Stop loading
     }
-    
-    } else {
-      setError("Numéro invalide. Entrez un numéro béninois valide."); // Affiche le message d'erreur
-    }
-  };
+  } else {
+    setError("Numéro invalide. Entrez un numéro béninois valide.");
+  }
+};
+
 
   return (
     <>
@@ -163,7 +165,18 @@ function SignupPage() {
           {/* Boutons d'action */}
           <div className="flex flex-col items-center w-[100%] -mt-10 p-4 gap-6">
             {/* Bouton principal bleu pour connexion email */}
-            <ButtonType1Blue text="Inscrivez-vous" /> 
+         <ButtonType1Blue
+            text=  {loading ? (
+    <div className="flex items-center justify-center gap-2">
+      <LoaderButton /> {/* Your loader component */}
+      <span>En cours</span>
+    </div>
+  ) : (
+    "Continuer"
+  )}
+            disabled={loading}
+            onClick={() => setChannel("email")}
+          />
 
             {/* Lien vers la page de login */}
             <div>

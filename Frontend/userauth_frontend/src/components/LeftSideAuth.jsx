@@ -7,7 +7,7 @@ function LeftSideAuth() {
     <div className="w-[50%] bg-SideBackgroundColor hidden customBreakpoint:flex customBreakpoint:flex-col customBreakpoint:gap-32 pl-4 pt-16">
       <div>
         <h1 className="font-bold text-TextColorBlue text-BigHeadingFont">
-          Bienvenue a vous sur notre plateforme d'authentification communautaire
+         UserAuth – La solution fiable pour toutes vos connexions numériques.
         </h1>
       </div>
       <div>

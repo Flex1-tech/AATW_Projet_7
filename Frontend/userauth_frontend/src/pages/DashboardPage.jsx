@@ -90,7 +90,7 @@ function DashboardPage() {
   return (
     <>
       {/* Navbar */}
-      <nav className="fixed top-0 z-50 w-full bg-neutral-primary-soft border-b border-default">
+      <nav className="fixed top-0 z-300 w-full bg-white border-b border-default">
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
 
@@ -149,14 +149,9 @@ function DashboardPage() {
                     {/* Menu items */}
                     <ul className="p-2 text-sm text-body font-medium">
                       <li className="hover:bg-gray-200 rounded-md">
-                        <span className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
-                          Dashboard
-                        </span>
-                      </li>
-                      <li className="hover:bg-gray-200 rounded-md">
-                        <span className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
+                        <Link to="/loginPage" onClick={logout} className="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
                           Deconnexion
-                        </span>
+                        </Link>
                       </li>
                     </ul>
                   </div>

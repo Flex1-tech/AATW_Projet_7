@@ -10,38 +10,34 @@ import HeadingLogo from "../components/HeadingLogo";
 import PageTitle from "../components/PageTitle";
 import EmailInput from "../components/EmailInput";
 import PasswordInput from "../components/PasswordInput";
-import PhoneNumberInput from "../components/PhoneInput";
 import ButtonType1Blue from "../components/ButtonType1Blue";
 import ButtonType2Transparent from "../components/ButtonType2Transparent";
+import LoaderButton from "../components/LoaderButton";
 
 function LoginPage() {
   const navigate = useNavigate();
 
   // State
-  const [isWhatsAppMode, setIsWhatsAppMode] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const [error, setError] = useState("");
+  const [channel, setChannel] = useState("email"); // email | whatsapp
+
   const [formData, setFormData] = useState({
     email: "",
-    phone: "",
     password: "",
   });
 
-  // Handle form submission
+  // Submit login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    const identity = isWhatsAppMode ? formData.phone : formData.email;
-    const channel = isWhatsAppMode ? "whatsapp" : "email";
-    const email_default = formData.email;
-
-    if (!identity || !formData.password) {
+    if (!formData.email || !formData.password) {
       setError("Veuillez remplir tous les champs requis.");
       return;
     }
 
-    setLoading(true);
+    setLoading1(true);
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/auth/login", {
@@ -51,10 +47,10 @@ function LoginPage() {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          email: !isWhatsAppMode ? formData.email : null,
-          telephone: isWhatsAppMode ? formData.phone : null,
+          email: formData.email,      // ALWAYS sent
           password: formData.password,
-          channel: channel,
+          channel: channel,      
+          remember: false // email OR whatsapp
         }),
       });
 
@@ -67,16 +63,16 @@ function LoginPage() {
 
       navigate("/pageOTP", {
         state: {
-          identity,
-          channel,
-          email_default,
+          identity: formData.email,
+          channel: channel,
+          email_default: formData.email, // backend-confirmed email
         },
       });
     } catch (err) {
       console.error(err);
       setError("Erreur réseau. Veuillez réessayer.");
     } finally {
-      setLoading(false);
+      setLoading1(false);
     }
   };
 
@@ -90,34 +86,18 @@ function LoginPage() {
       >
         {/* Header */}
         <HeadingLogo size="w-16 h-16" logo={Logo} />
-        <PageTitle
-          text={
-            isWhatsAppMode
-              ? "Connexion via WhatsApp"
-              : "Connectez-vous à UserAuth"
-          }
-        />
+        <PageTitle text="Connectez-vous à UserAuth" />
 
-        {/* Form fields */}
+        {/* Inputs */}
         <div className="flex flex-col w-[100%] p-4 gap-6">
-          {!isWhatsAppMode ? (
-            <EmailInput
-              label="Email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              placeholder="Entrer votre email"
-            />
-          ) : (
-            <PhoneNumberInput
-              label="Numéro WhatsApp"
-              value={formData.phone}
-              onChange={(value) =>
-                setFormData({ ...formData, phone: value })
-              }
-            />
-          )}
+          <EmailInput
+            label="Email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            placeholder="Entrer votre email"
+          />
 
           <PasswordInput
             label="Mot de passe"
@@ -134,50 +114,41 @@ function LoginPage() {
 
           <div className="flex justify-end">
             <Link
-              to="/forgotPasswordPage"
-              className="text-TextColorBlue hover:underline text-sm"
+              to=""
+              className="text-TextColorBlue  text-sm text-center"
             >
-              Mot de passe oublié ?
+               Pour vous connecter, un code OTP sera envoyé à votre email ou numéro WhatsApp selon le mode de connexion choisi. Veuillez vérifier le message et entrer le code pour finaliser votre connexion.
             </Link>
           </div>
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-col items-center w-[100%] -mt-4 p-4 gap-2">
-          <div className="w-full">
-            <ButtonType1Blue
-              text={
-                loading
-                  ? "Envoi du code..."
-                  : isWhatsAppMode
-                  ? "Se connecter par WhatsApp"
-                  : "Se connecter par email"
-              }
-              disabled={loading}
-            />
-          </div>
+        <div className="flex flex-col items-center w-[100%] -mt-4 p-4 gap-3">
+          {/* Email button */}
+          <ButtonType1Blue
+            text=  {loading1 ? (
+    <div className="flex items-center justify-center gap-2">
+      <LoaderButton /> {/* Your loader component */}
+      <span>Envoi du code...</span>
+    </div>
+  ) : (
+    "Se connecter par Email"
+  )}
+            disabled={loading1}
+            onClick={() => setChannel("email")}
+          />
 
           <div className="py-2 text-gray-400">ou</div>
 
-          <div className="w-full">
-            {!isWhatsAppMode ? (
-              <button
-                type="button"
-                className="w-full"
-                onClick={() => setIsWhatsAppMode(true)}
-              >
-                <ButtonType2Transparent />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setIsWhatsAppMode(false)}
-                className="w-full py-3 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-all"
-              >
-                Se connecter par Email
-              </button>
-            )}
-          </div>
+          {/* WhatsApp button */}
+          <button
+            type="submit"
+            className="w-full"
+            onClick={() => setChannel("whatsapp")}
+            disabled={loading1}
+          >
+            <ButtonType2Transparent />
+          </button>
 
           {/* Footer */}
           <div className="mt-4 text-sm">
