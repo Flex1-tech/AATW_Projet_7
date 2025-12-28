@@ -148,6 +148,7 @@ class AuthController extends Controller
     // EMAIL VERIFICATION
     public function verifyEmail(Request $request)
     {
+        $frontendUrl = config('app.frontend_url');
         if (!$request->hasValidSignature()) {
             return response()->json(['message' => 'Lien invalide'], 400);
         }
@@ -158,9 +159,9 @@ class AuthController extends Controller
             return response()->json(['message' => 'Email déjà vérifié']);
         }
 
-        $user->markEmailAsVerified();
+          $user->markEmailAsVerified();
 
-        return response()->json(['message' => 'Email vérifié avec succès']);
+        return redirect($frontendUrl ."/emailVerifiedPage" );
     }
 
     public function resendVerificationByEmail(Request $request)

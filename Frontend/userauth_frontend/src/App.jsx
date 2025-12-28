@@ -9,6 +9,7 @@ import Successmessage from "./components/Successmessage";
 import Successpage from "./pages/Successpage";
 import Successpageotp from "./pages/successPageOTP";
 import ProtectedRoute from "./components/ProtectedRoute";
+import EmailVerifiedPage from "./pages/EmailVerifiedPage";
 export default function App() {
   return (
     <>
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/signupPage" element={<SignupPage/>} />
         <Route path="/forgotPasswordPage" element= {<ForgotPasswordPage/>} />
         <Route path="/pageOTP" element = {<PageOTP/>} />
+          <Route path="/emailVerifiedPage" element = {<EmailVerifiedPage/>} />
         <Route 
   path="/dashboardPage" 
   element={
