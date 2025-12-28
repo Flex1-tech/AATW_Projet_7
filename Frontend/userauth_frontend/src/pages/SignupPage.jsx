@@ -50,7 +50,7 @@ function SignupPage() {
    * - Vérifie si le numéro est valide et commence par +229 (Bénin)
    * - Affiche un message d'erreur si nécessaire
    */
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   if (loading) return; // Prevent multiple clicks
@@ -58,26 +58,28 @@ function SignupPage() {
   if (isValidPhoneNumber(formData.phone) && formData.phone.startsWith("+229")) {
     setError("");
     setLoading(true); // Start loading
-    console.log("Valid Benin number:", formData);
 
     try {
-      const response = await api.post('http://127.0.0.1:8000/api/auth/register',{
-        nom: formData.name,
-        prenom: formData.lastName,
-        email: formData.email,
-        telephone: formData.phone.slice(0, 4) + formData.phone.slice(6),
-        password: formData.password,
-        password_confirmation: formData.password
-      });
-      console.log('✅ Inscription réussie:', response.data);
+      const response = await api.post(
+        "http://127.0.0.1:8000/api/auth/register",
+        {
+          nom: formData.name,
+          prenom: formData.lastName,
+          email: formData.email,
+          telephone: formData.phone.slice(0, 4) + formData.phone.slice(6),
+          password: formData.password,
+          password_confirmation: formData.password,
+        }
+      );
+
       setFormData(initialFormData);
-      navigate('/Successpage');
+      navigate("/Successpage");
     } catch (error) {
       if (error.response?.status === 422) {
         const errors = error.response.data.errors;
-        console.log('Erreurs de validation:', errors);
+        // validation errors handled silently
       }
-      setError(error.response?.data?.message || 'Erreur d\'inscription');
+      setError(error.response?.data?.message || "Erreur d'inscription");
     } finally {
       setLoading(false); // Stop loading
     }

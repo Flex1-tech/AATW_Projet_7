@@ -33,7 +33,7 @@ function DashboardPage() {
   // Logout function
   // -------------------------
   const logout = async () => {
-    console.log("Logout started...");
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/auth/logout", {
         method: "POST",
@@ -42,12 +42,7 @@ function DashboardPage() {
           Accept: "application/json",
         },
       });
-
-      if (response.ok) {
-        console.log("Logout successful (token revoked on backend)");
-      } else {
-        console.warn("Logout request returned non-OK status:", response.status);
-      }
+      
     } catch (error) {
       console.error("Logout request failed:", error);
     } finally {
