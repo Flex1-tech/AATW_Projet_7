@@ -7,7 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPageModif from "./pages/ForgotPasswordPageModif";
 import Successmessage from "./components/Successmessage";
 import Successpage from "./pages/Successpage";
-import Successpageotp from "./pages/successPageOTP";
+import Successpageotp from "./pages/SuccessPageOTP";
 import ProtectedRoute from "./components/ProtectedRoute";
 import EmailVerifiedPage from "./pages/EmailVerifiedPage";
 export default function App() {

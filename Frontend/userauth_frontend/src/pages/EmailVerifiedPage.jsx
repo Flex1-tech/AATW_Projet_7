@@ -22,7 +22,9 @@ function EmailVerifiedPage() {
           <Successmessage text="Votre compte a ete verifie avec succes . Retournez a present vers la page de connexion . "/>
           
           {/* Boutons d'action */}
-        
+         <Link to="/loginPage" className="w-full">
+                <ButtonType1Blue text="Aller à la page de connexion" /> 
+            </Link> 
        </div>
     </div>
   )
