@@ -45,7 +45,7 @@ class OtpService
             ->first();
 
 
-        if (!$record || !Hash::check($otp, $record->otp)) {
+        if (!$record || !Hash::check(trim($otp), $record->otp)) {
             return null;
         }
 

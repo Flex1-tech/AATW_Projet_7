@@ -38,20 +38,24 @@ This project was developed to demonstrate proficiency in:
 ### Authentication Flow
 
 1. **User Login**
+
    - User submits credentials (email and password)
    - Selects preferred OTP delivery method (Email or WhatsApp)
 
 2. **OTP Generation**
+
    - Backend validates user credentials
    - Generates a time-limited 6-digit OTP
    - Dispatches OTP through selected channel
 
 3. **OTP Verification**
+
    - User enters received OTP
    - Backend validates OTP authenticity and expiration
    - Issues authentication token upon successful verification
 
 4. **Authenticated Access**
+
    - User gains access to protected resources
    - Token-based authorization for subsequent requests
 
@@ -85,23 +89,23 @@ UserAuth/
 
 ### Backend
 
-| Technology | Purpose |
-|------------|---------|
-| Laravel | PHP framework for API development |
-| Laravel Sanctum | Token-based authentication |
-| SQLite/MySQL | Database management |
-| SMTP | Email delivery service |
-| WhatsApp Business API | WhatsApp OTP integration |
+| Technology            | Purpose                           |
+| --------------------- | --------------------------------- |
+| Laravel               | PHP framework for API development |
+| Laravel Sanctum       | Token-based authentication        |
+| SQLite/MySQL          | Database management               |
+| SMTP                  | Email delivery service            |
+| WhatsApp Business API | WhatsApp OTP integration          |
 
 ### Frontend
 
-| Technology | Purpose |
-|------------|---------|
-| React | UI library |
-| Vite | Build tool and development server |
-| React Router | Client-side routing |
-| Axios | HTTP client |
-| Tailwind CSS | Utility-first CSS framework |
+| Technology   | Purpose                           |
+| ------------ | --------------------------------- |
+| React        | UI library                        |
+| Vite         | Build tool and development server |
+| React Router | Client-side routing               |
+| Axios        | HTTP client                       |
+| Tailwind CSS | Utility-first CSS framework       |
 
 ---
 
@@ -166,18 +170,19 @@ The frontend application will be available at `http://localhost:5173`
 
 ### Authentication Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Create new user account |
-| POST | `/api/auth/login` | Authenticate user and request OTP |
-| POST | `/api/auth/verify-otp` | Verify OTP and issue token |
-| POST | `/api/auth/resend` | Resend OTP code |
-| POST | `/api/auth/logout` | Invalidate authentication token |
-| GET | `/api/auth/me` | Retrieve authenticated user data |
+| Method | Endpoint               | Description                       |
+| ------ | ---------------------- | --------------------------------- |
+| POST   | `/api/auth/register`   | Create new user account           |
+| POST   | `/api/auth/login`      | Authenticate user and request OTP |
+| POST   | `/api/auth/verify-otp` | Verify OTP and issue token        |
+| POST   | `/api/auth/resend`     | Resend OTP code                   |
+| POST   | `/api/auth/logout`     | Invalidate authentication token   |
+| GET    | `/api/auth/me`         | Retrieve authenticated user data  |
 
 ### Request/Response Examples
 
 **Login Request**
+
 ```json
 POST /api/auth/login
 {
@@ -188,6 +193,7 @@ POST /api/auth/login
 ```
 
 **OTP Verification Request**
+
 ```json
 POST /api/auth/verify-otp
 {

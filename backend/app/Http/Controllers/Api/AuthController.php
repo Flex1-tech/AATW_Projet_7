@@ -95,7 +95,7 @@ class AuthController extends Controller
             $user,
             $request->otp,
             $request->channel,
-            $request->context,
+            $request->context
         );
 
         if (!$otpRecord) {
@@ -240,7 +240,7 @@ class AuthController extends Controller
 
     protected function getGeoInfo($ip)
     {
-        $response = Http::get("https://reallyfreegeoip.org/json/{$ip}");
+        $response = Http::withoutVerifying()->get("https://reallyfreegeoip.org/json/{$ip}");
         return $response->ok() ? $response->json() : [];
     }
 
