@@ -38,24 +38,20 @@ This project was developed to demonstrate proficiency in:
 ### Authentication Flow
 
 1. **User Login**
-
    - User submits credentials (email and password)
    - Selects preferred OTP delivery method (Email or WhatsApp)
 
 2. **OTP Generation**
-
    - Backend validates user credentials
    - Generates a time-limited 6-digit OTP
    - Dispatches OTP through selected channel
 
 3. **OTP Verification**
-
    - User enters received OTP
    - Backend validates OTP authenticity and expiration
    - Issues authentication token upon successful verification
 
 4. **Authenticated Access**
-
    - User gains access to protected resources
    - Token-based authorization for subsequent requests
 
@@ -119,6 +115,7 @@ Ensure the following are installed on your system:
 - PHP (v8.1 or higher)
 - Composer
 - Git
+- Laravel 5.26.2
 
 ### Backend Configuration
 
@@ -148,6 +145,42 @@ php artisan serve
 ```
 
 The backend API will be available at `http://127.0.0.1:8000`
+
+### Configure cURL / SSL on Windows
+
+To fix the `cURL error 60` when sending OTP via WhatsApp:
+
+1. **Download the official CA bundle for cURL**
+   Save it in a safe folder where it won’t be accidentally modified, for example:
+
+```
+C:\Program Files\PHP\extras\ssl\cacert.pem
+```
+
+Official download link: [https://curl.se/ca/cacert.pem](https://curl.se/ca/cacert.pem)
+
+2. **Find your active `php.ini`**
+   Open a terminal and run:
+
+```bash
+php --ini
+```
+
+This will show the path to the loaded configuration file.
+
+3. **Edit the active `php.ini`:**
+
+```ini
+curl.cainfo = "C:\Program Files\PHP\extras\ssl\cacert.pem"
+openssl.cafile = "C:\Program Files\PHP\extras\ssl\cacert.pem"
+```
+
+4. **Restart `php artisan serve`**
+   Simply stop and start the server again:
+
+```bash
+php artisan serve
+```
 
 ### Frontend Configuration
 
